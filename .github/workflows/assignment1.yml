@@ -1,25 +1,28 @@
-# .github/workflows/assignment1.yml
 name: Assignment 1 CI
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:   # allows manual triggering
-
+    push:
+        tags-ignore:
+            - '*'
+        branches:
+            - '*'
 jobs:
-  build-and-test:
-    runs-on: self-hosted   # uses your configured runner
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Ensure full-test.sh is executable
-        run: chmod +x full-test.sh
-
-      - name: Run full test
-        run: ./full-test.sh
+    unit-test:
+        container: cuaesd/aesd-autotest:24-unit-test
+        runs-on: self-hosted
+        steps:
+          - uses: actions/checkout@v2
+          - name: Checkout submodules
+            run : git submodule update --init --recursive
+          - name: Run unit test
+            run: ./unit-test.sh
+    full-test:
+        container: cuaesd/aesd-autotest:24-assignment1
+        runs-on: self-hosted
+        steps:
+          - uses: actions/checkout@v2
+          - name: Checkout submodules
+            run : git submodule update --init --recursive
+          - name: Run full test
+            run: ./full-test.sh
 
